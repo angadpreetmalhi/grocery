@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grocery Give and Take</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+    }
+    .container {
+      max-width: 800px;
+      width: 100%;
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: center;
+    }
+    th {
+      background-color: #f4f4f4;
+    }
+    .input-cell input {
+      width: 100%;
+      box-sizing: border-box;
+      text-align: right;
+      padding: 5px;
+    }
+    .total, .give-take {
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Grocery Give and Take</h2>
+    <table>
+      <thead>
+        <tr id="nameRow"></tr>
+      </thead>
+      <tbody id="inputRows">
+        <!-- Rows for input will be generated here -->
+      </tbody>
+      <tfoot>
+        <tr id="totalRow" class="total"></tr>
+        <tr id="giveTakeRow" class="give-take"></tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <script>
+    // List of names
+    const names = ['Amrit', 'Angad', 'Buttar', 'Gurpal', 'Harman', 'Honey', 'Jassi', 'Rana', 'Shah', 'Sukhbir'];
+
+    // Function to render the initial table structure
+    function renderTable() {
+      const nameRow = document.getElementById('nameRow');
+      const inputRows = document.getElementById('inputRows');
+      const totalRow = document.getElementById('totalRow');
+      const giveTakeRow = document.getElementById('giveTakeRow');
+
+      // Render name headers
+      nameRow.innerHTML = '<th></th>'; // Empty cell for the corner
+      names.forEach((name, index) => {
+        nameRow.innerHTML += `<th>${name}</th>`;
+      });
+
+      // Render 4 input rows
+      for (let i = 0; i < 4; i++) {
+        const row = document.createElement('tr');
+        row.classList.add('input-row');
+        row.innerHTML = `<td>Amount ${i + 1}</td>`;
+        for (let j = 0; j < names.length; j++) {
+          row.innerHTML += `<td class="input-cell"><input type="number" id="input-${i}-${j}" min="0" oninput="calculateTotals()"></td>`;
+        }
+        inputRows.appendChild(row);
+      }
+
+      // Render total row
+      totalRow.innerHTML = '<td>Total</td>';
+      for (let j = 0; j < names.length; j++) {
+        totalRow.innerHTML += `<td id="total-${j}">0</td>`;
+      }
+
+      // Render give/take row
+      giveTakeRow.innerHTML = '<td>Give/Take</td>';
+      for (let j = 0; j < names.length; j++) {
+        giveTakeRow.innerHTML += `<td id="give-take-${j}">0</td>`;
+      }
+    }
+
+    // Function to calculate the totals and give/take amounts
+    function calculateTotals() {
+      const numPeople = names.length;
+      let grandTotal = 0;
+      const totals = [];
+
+      // Calculate total for each person
+      for (let j = 0; j < numPeople; j++) {
+        let total = 0;
+        for (let i = 0; i < 4; i++) { // Updated to loop over 4 rows
+          const amount = parseFloat(document.getElementById(`input-${i}-${j}`).value) || 0;
+          total += amount;
+        }
+        totals.push(total);
+        document.getElementById(`total-${j}`).innerText = total.toFixed(2);
+        grandTotal += total;
+      }
+
+      // Calculate average amount spent
+      const average = grandTotal / numPeople;
+
+      // Calculate give/take amount for each person
+      for (let j = 0; j < numPeople; j++) {
+        const giveTake = average - totals[j];
+        document.getElementById(`give-take-${j}`).innerText = giveTake.toFixed(2);
+      }
+    }
+
+    // Initial render
+    renderTable();
+  </script>
+</body>
+</html>
