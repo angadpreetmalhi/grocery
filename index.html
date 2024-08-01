@@ -14,7 +14,7 @@
     }
     .container {
       width: 100%;
-      max-width: 700px; /* Adjusted width for 10 names */
+      max-width: 700px;
       overflow-x: auto;
       background-color: #fff;
       border-radius: 10px;
@@ -25,10 +25,10 @@
       border-collapse: collapse;
     }
     th, td {
-      padding: 5px;
+      padding: 3px; /* Reduced padding */
       text-align: center;
       border: 1px solid #ddd;
-      font-size: 12px; /* Reduced font size for narrower columns */
+      font-size: 12px;
     }
     th {
       background-color: #007bff;
@@ -44,7 +44,6 @@
       padding: 2px;
       border: 1px solid #ddd;
       border-radius: 4px;
-      max-width: 40px; /* Set max width for input fields */
     }
     .total, .give-take {
       font-weight: bold;
@@ -56,10 +55,10 @@
     }
     .name-header {
       font-weight: bold;
-      font-size: 12px; /* Smaller font size for narrow columns */
+      font-size: 12px;
     }
-    .amount-column, .total-column, .give-take-column {
-      width: 40px; /* Fixed narrow width for $ columns, Total, and Give/Take columns */
+    .name-column, .amount-column, .total-column, .give-take-column {
+      width: 25%;
     }
   </style>
 </head>
@@ -69,10 +68,8 @@
     <table>
       <thead>
         <tr>
-          <th class="name-header">Name</th>
-          <th class="amount-column">$</th>
-          <th class="amount-column">$</th>
-          <th class="amount-column">$</th>
+          <th class="name-column name-header">Name</th>
+          <th class="amount-column">Money<br>Spent</th>
           <th class="total-column">Total</th>
           <th class="give-take-column">Give/Take</th>
         </tr>
@@ -97,22 +94,20 @@
 
         // Name cell
         const nameCell = document.createElement('td');
+        nameCell.classList.add('name-column');
         nameCell.innerText = name;
         row.appendChild(nameCell);
 
-        // Amount inputs (3 columns with $ sign)
-        for (let i = 0; i < 3; i++) {
-          const amountCell = document.createElement('td');
-          amountCell.classList.add('amount-column'); // Apply the fixed width
-          const input = document.createElement('input');
-          input.type = 'number';
-          input.id = `input-${index}-${i}`;
-          input.min = '0';
-          input.classList.add('input-cell');
-          input.oninput = calculateTotals;
-          amountCell.appendChild(input);
-          row.appendChild(amountCell);
-        }
+        // Money Spent input
+        const amountCell = document.createElement('td');
+        amountCell.classList.add('amount-column');
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.id = `input-${index}`;
+        input.classList.add('input-cell');
+        input.oninput = calculateTotals;
+        amountCell.appendChild(input);
+        row.appendChild(amountCell);
 
         // Total and Give/Take cells
         const totalCell = document.createElement('td');
@@ -139,10 +134,12 @@
 
       // Calculate total for each person
       for (let j = 0; j < numPeople; j++) {
+        const input = document.getElementById(`input-${j}`).value;
         let total = 0;
-        for (let i = 0; i < 3; i++) {
-          const amount = parseFloat(document.getElementById(`input-${j}-${i}`).value) || 0;
-          total += amount;
+        try {
+          total = eval(input);
+        } catch (e) {
+          total = 0;
         }
         totals.push(total);
         document.getElementById(`total-${j}`).innerText = `$${total.toFixed(2)}`;
