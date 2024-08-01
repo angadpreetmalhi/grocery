@@ -60,6 +60,14 @@
     .name-column, .amount-column, .total-column, .give-take-column {
       width: 25%;
     }
+    .give-take-positive {
+      color: green;
+      font-weight: bold;
+    }
+    .give-take-negative {
+      color: red;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
@@ -136,10 +144,12 @@
       for (let j = 0; j < numPeople; j++) {
         const input = document.getElementById(`input-${j}`).value;
         let total = 0;
-        try {
-          total = eval(input);
-        } catch (e) {
-          total = 0;
+        if (input) {
+          try {
+            total = eval(input.replace(/[^-()\d/*+.]/g, ''));
+          } catch (e) {
+            total = 0;
+          }
         }
         totals.push(total);
         document.getElementById(`total-${j}`).innerText = `$${total.toFixed(2)}`;
@@ -152,7 +162,16 @@
       // Calculate give/take amount for each person
       for (let j = 0; j < numPeople; j++) {
         const giveTake = totals[j] - average;
-        document.getElementById(`give-take-${j}`).innerText = `$${giveTake.toFixed(2)}`;
+        const giveTakeCell = document.getElementById(`give-take-${j}`);
+        giveTakeCell.innerText = `$${giveTake.toFixed(2)}`;
+
+        if (giveTake > 0) {
+          giveTakeCell.classList.add('give-take-positive');
+          giveTakeCell.classList.remove('give-take-negative');
+        } else {
+          giveTakeCell.classList.add('give-take-negative');
+          giveTakeCell.classList.remove('give-take-positive');
+        }
       }
     }
 
